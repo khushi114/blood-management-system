@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import authRoutes from './routes/auth.js'; // ✅ Include .js
+import inventoryRoutes from './routes/inventory.js';
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Routes
 app.use('/api', authRoutes);
-
+app.use('/api/inventory', inventoryRoutes);
 // Default route
 app.get('/', (req, res) => {
   res.send('Backend is running');

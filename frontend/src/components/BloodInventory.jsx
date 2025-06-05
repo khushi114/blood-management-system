@@ -1,99 +1,128 @@
-// src/components/BloodInventory.jsx
-import React from 'react';
-import './BloodInventory.css'; // Create this file for custom styles
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
-const bloodData = [
-  { group: 'A+', current: 45, capacity: 50 },
-  { group: 'A-', current: 12, capacity: 30 },
-  { group: 'B+', current: 28, capacity: 50 },
-  { group: 'B-', current: 8, capacity: 20 },
-  { group: 'AB+', current: 15, capacity: 25 },
-  { group: 'AB-', current: 5, capacity: 15 },
-  { group: 'O+', current: 35, capacity: 60 },
-  { group: 'O-', current: 10, capacity: 40 },
-];
-
-const recentTransactions = [
-  {
-    id: 1,
-    type: 'Incoming',
-    group: 'A+',
-    units: 2,
-    source: 'John Doe',
-    date: '2023-06-01',
-  },
-];
+import './BloodInventory.css'; // Optional styling
 
 const BloodInventory = () => {
+  const [inventory, setInventory] = useState([]);
+  const [form, setForm] = useState({
+    bloodGroup: '',
+    quantity: '',
+    expiryDate: '',
+  });
+
   const navigate = useNavigate();
 
-  const getPercentage = (current, capacity) => ((current / capacity) * 100).toFixed(0);
+  // Load inventory from backend
+  const fetchInventory = async () => {
+    try {
+      const res = await axios.get('/api/inventory');
+      console.log("Fetched Inventory:", res.data);
+      setInventory(res.data);
+    } catch (error) {
+      console.error('Error fetching inventory:', error.response?.data || error.message);
+      alert('Error loading inventory');
+    }
+  };
+
+  useEffect(() => {
+    fetchInventory();
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('/api/inventory', form);
+      alert('Blood entry added!');
+      setForm({ bloodGroup: '', quantity: '', expiryDate: '' });
+      fetchInventory();
+    } catch (err) {
+      console.error('Error adding inventory:', err.response?.data || err.message);
+      alert('Failed to add inventory.');
+    }
+  };
 
   return (
-    <div className="inventory-container">
-      <div className="header">
-        <h2>Blood Inventory Management</h2>
-        <p>Monitor and manage blood stocks</p>
-        <div className="actions">
-          <button className="btn-export">Export Data</button>
-          <button className="btn-add" onClick={() => navigate('/add-transaction')}>Add Transaction</button>
-        </div>
-      </div>
+    <div className="blood-inventory-container">
+      <h2>Blood Inventory (Admin)</h2>
 
-      <div className="blood-grid">
-        {bloodData.map((item) => {
-          const percent = getPercentage(item.current, item.capacity);
-          return (
-            <div className="blood-card" key={item.group}>
-              <div className="blood-group">🩸 {item.group}</div>
-              <div className="blood-units">{item.current}/{item.capacity} units</div>
-              <div className="progress-bar">
-                <div
-                  className="progress"
-                  style={{ width: `${percent}%`, backgroundColor: '#d50000' }}
-                ></div>
-              </div>
-              <div className="blood-percent">{percent}% full</div>
-            </div>
-          );
-        })}
-      </div>
+      {/* Form for admin to add blood entry */}
+      <form onSubmit={handleSubmit} className="inventory-form">
+        <label>
+          Blood Group:
+          <select name="bloodGroup" value={form.bloodGroup} onChange={handleChange} required>
+            <option value="">Select</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </label>
 
-      <div className="transactions">
-        <h3>Recent Transactions</h3>
-        <p>Latest blood donations and distributions</p>
-        <table className="transaction-table">
-          <thead>
+        <label>
+          Quantity (Units):
+          <input
+            type="number"
+            name="quantity"
+            value={form.quantity}
+            onChange={handleChange}
+            required
+            min="1"
+          />
+        </label>
+
+        <label>
+          Expiry Date:
+          <input
+            type="date"
+            name="expiryDate"
+            value={form.expiryDate}
+            onChange={handleChange}
+            required
+          />
+        </label>
+
+        <button type="submit">Add Inventory</button>
+      </form>
+
+      {/* Inventory Table */}
+      <h3>Current Inventory</h3>
+      <table className="inventory-table">
+        <thead>
+          <tr>
+            <th>Blood Group</th>
+            <th>Quantity</th>
+            <th>Expiry Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {inventory.length === 0 ? (
             <tr>
-              <th>ID</th>
-              <th>Type</th>
-              <th>Blood Group</th>
-              <th>Units</th>
-              <th>Source/Destination</th>
-              <th>Date</th>
-              <th>Actions</th>
+              <td colSpan="3">No data available</td>
             </tr>
-          </thead>
-          <tbody>
-            {recentTransactions.map((txn) => (
-              <tr key={txn.id}>
-                <td>{txn.id}</td>
-                <td>
-                  <span className={`badge ${txn.type === 'Incoming' ? 'incoming' : 'outgoing'}`}>
-                    {txn.type}
-                  </span>
-                </td>
-                <td>{txn.group}</td>
-                <td>{txn.units}</td>
-                <td>{txn.source}</td>
-                <td>{txn.date}</td>
-                <td><button className="view-btn">View</button></td>
+          ) : (
+            inventory.map((item) => (
+              <tr key={item._id}>
+                <td>{item.bloodGroup}</td>
+                <td>{item.quantity}</td>
+                <td>{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'N/A'}</td>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      <br />
+      <button onClick={() => navigate('/')}>Back to Dashboard</button>
     </div>
   );
 };

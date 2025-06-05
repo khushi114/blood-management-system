@@ -41,7 +41,7 @@ const Dashboard = () => {
             <p className="text-gray-600 mt-3 text-base lg:text-lg">View and manage blood stock levels.</p>
             <button
               className="card-button mt-4 bg-red-600 text-white px-5 py-2.5 rounded-lg text-base lg:text-lg hover:bg-red-700 transition w-full lg:w-auto"
-              onClick={() => handleNavigation('/inventory')}
+              onClick={() => handleNavigation('/BloodInventory')}
             >
               View Inventory
             </button>
