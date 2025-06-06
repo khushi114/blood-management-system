@@ -6,9 +6,11 @@ import '../../App.css';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminCode, setAdminCode] = useState('');
+  const [error, setError] = useState('');
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,28 +19,28 @@ const Login = () => {
     try {
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          adminCode: isAdmin ? adminCode : undefined,
+        }),
       });
 
       const data = await response.json();
-
       if (response.ok) {
-        // Save JWT token & user in localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        // Save user in pendingUser (not logged in yet)
+        localStorage.setItem('pendingUser', JSON.stringify(data.user));
 
-        // Update context
-        login(data.user);
+        // Send verification code
+        await fetch('http://localhost:5000/api/send-verification-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
 
-        // Redirect based on role
-        if (data.user.role === 'admin') {
-          navigate('/admin-dashboard');
-        } else {
-          navigate('/dashboard');
-        }
+        // Redirect to verification page
+        navigate('/verify');
       } else {
         setError(data.message || 'Login failed');
       }
@@ -70,6 +72,28 @@ const Login = () => {
             required
           />
         </div>
+        <div className="form-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={isAdmin}
+              onChange={(e) => setIsAdmin(e.target.checked)}
+            />
+            Login as Admin
+          </label>
+        </div>
+        {isAdmin && (
+          <div className="form-group">
+            <label>Admin Code</label>
+            <input
+              type="text"
+              value={adminCode}
+              onChange={(e) => setAdminCode(e.target.value)}
+              required={isAdmin}
+              placeholder="Enter Admin Code"
+            />
+          </div>
+        )}
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <button type="submit" className="auth-button">Login</button>
       </form>

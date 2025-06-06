@@ -37,7 +37,7 @@ const Register = () => {
         if (data.user.role === 'admin') {
           navigate('/admin-dashboard');
         } else {
-          navigate('/dashboard');
+          navigate('/login');
         }
       } else {
         alert(data.message || 'Registration failed');

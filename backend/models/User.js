@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user',
   },
+  adminCode: {
+    type: String,
+    default: null, // Optional field for admin secret code
+  },
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

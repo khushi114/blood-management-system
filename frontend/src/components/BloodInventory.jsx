@@ -13,12 +13,14 @@ const BloodInventory = () => {
 
   const navigate = useNavigate();
 
-  // Load inventory from backend
+  // Get user role from localStorage
+  const user = JSON.parse(localStorage.getItem('user'));
+  const isAdmin = user && user.role === 'admin';
+
   const fetchInventory = async () => {
     try {
       const res = await axios.get('/api/inventory');
-      console.log("Fetched Inventory:", res.data);
-      setInventory(res.data);
+      setInventory(Array.isArray(res.data.data) ? res.data.data : []);
     } catch (error) {
       console.error('Error fetching inventory:', error.response?.data || error.message);
       alert('Error loading inventory');
@@ -49,50 +51,52 @@ const BloodInventory = () => {
 
   return (
     <div className="blood-inventory-container">
-      <h2>Blood Inventory (Admin)</h2>
+      <h2>Blood Inventory {isAdmin && '(Admin)'}</h2>
 
-      {/* Form for admin to add blood entry */}
-      <form onSubmit={handleSubmit} className="inventory-form">
-        <label>
-          Blood Group:
-          <select name="bloodGroup" value={form.bloodGroup} onChange={handleChange} required>
-            <option value="">Select</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-          </select>
-        </label>
+      {/* Only show form if admin */}
+      {isAdmin && (
+        <form onSubmit={handleSubmit} className="inventory-form">
+          <label>
+            Blood Group:
+            <select name="bloodGroup" value={form.bloodGroup} onChange={handleChange} required>
+              <option value="">Select</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </label>
 
-        <label>
-          Quantity (Units):
-          <input
-            type="number"
-            name="quantity"
-            value={form.quantity}
-            onChange={handleChange}
-            required
-            min="1"
-          />
-        </label>
+          <label>
+            Quantity (Units):
+            <input
+              type="number"
+              name="quantity"
+              value={form.quantity}
+              onChange={handleChange}
+              required
+              min="1"
+            />
+          </label>
 
-        <label>
-          Expiry Date:
-          <input
-            type="date"
-            name="expiryDate"
-            value={form.expiryDate}
-            onChange={handleChange}
-            required
-          />
-        </label>
+          <label>
+            Expiry Date:
+            <input
+              type="date"
+              name="expiryDate"
+              value={form.expiryDate}
+              onChange={handleChange}
+              required
+            />
+          </label>
 
-        <button type="submit">Add Inventory</button>
-      </form>
+          <button type="submit">Add Inventory</button>
+        </form>
+      )}
 
       {/* Inventory Table */}
       <h3>Current Inventory</h3>
