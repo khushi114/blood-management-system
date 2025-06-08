@@ -1,122 +1,288 @@
-/* src/components/BloodInventory.css */
-.inventory-container {
-  padding: 2rem;
-  font-family: 'Segoe UI', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.blood-inventory-container {
+  max-width: 1200px; /* Matches dashboard-container in App.css */
+  margin: 50px auto; /* Matches auth-container margin */
+  padding: 20px; /* Matches main-content padding */
+  background: linear-gradient(135deg, #ffffff, #f4f4f4); /* Matches App.css background */
+  border-radius: 8px; /* Matches auth-container and dashboard-card */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Matches App.css shadow */
+  font-family: 'Inter', 'Arial', sans-serif; /* Updated font with Arial fallback */
+  color: #2d3436;
 }
 
-.header {
-  margin-bottom: 1.5rem;
-}
-
-.header h2 {
-  margin-bottom: 0.2rem;
-}
-
-.actions {
-  margin-top: 1rem;
-}
-
-.btn-export,
-.btn-add {
-  margin-right: 10px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 6px;
+h2 {
+  color: #d32f2f; /* Matches App.css primary red */
+  font-size: 1.5em; /* Matches navbar-brand */
   font-weight: 600;
-  cursor: pointer;
-}
-
-.btn-export {
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #ccc;
-}
-
-.btn-add {
-  background-color: #d50000;
-  color: #fff;
-}
-
-.blood-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
-  margin-top: 1rem;
-}
-
-.blood-card {
-  border: 1px solid #eee;
-  border-radius: 10px;
-  padding: 1rem;
-  background-color: #fff;
-}
-
-.blood-group {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.blood-units {
-  margin: 0.5rem 0;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 8px;
-  background-color: #f0c0c0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.progress {
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-.blood-percent {
-  font-size: 0.85rem;
-  margin-top: 0.3rem;
-  color: #666;
-}
-
-.transactions {
-  margin-top: 2rem;
-}
-
-.transaction-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-}
-
-.transaction-table th,
-.transaction-table td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
   text-align: center;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  background: linear-gradient(90deg, #d32f2f, #b71c1c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: bold;
+h3 {
+  color: #2d3436;
+  font-size: 1.2em; /* Slightly smaller for hierarchy */
+  font-weight: 500;
+  margin: 20px 0 15px;
+  border-bottom: 2px solid #d32f2f; /* Matches App.css primary red */
+  padding-bottom: 8px;
 }
 
-.incoming {
-  background-color: #d4f4dd;
-  color: #087f23;
+/* Loading indicator */
+p {
+  text-align: center;
+  color: #636e72;
+  font-size: 1em;
+  font-weight: 300;
+  font-style: italic;
+  animation: pulse 1.5s infinite;
 }
 
-.outgoing {
-  background-color: #fce8e6;
-  color: #c62828;
+/* Form styling */
+.inventory-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px; /* Matches auth-form gap */
+  background: rgba(255, 255, 255, 0.9); /* Glassmorphism effect */
+  backdrop-filter: blur(8px);
+  padding: 20px; /* Matches auth-container */
+  border-radius: 8px; /* Matches auth-container */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Matches App.css shadow */
+  margin-bottom: 20px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Matches dashboard-card */
 }
 
-.view-btn {
-  padding: 6px 12px;
-  background-color: #eee;
+.inventory-form:hover {
+  transform: translateY(-5px); /* Matches dashboard-card hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Matches dashboard-card hover */
+}
+
+.inventory-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 1em; /* Matches form-group label */
+  font-weight: 600; /* Matches form-group label */
+  color: #333; /* Matches form-group label */
+}
+
+.inventory-form select,
+.inventory-form input {
+  margin-top: 5px; /* Matches form-group */
+  padding: 8px; /* Matches form-group input */
+  border: 1px solid #ccc; /* Matches form-group input */
+  border-radius: 4px; /* Matches form-group input */
+  font-size: 1em; /* Matches form-group input */
+  background: #f9f9f9;
+  transition: all 0.3s ease; /* Matches App.css transitions */
+}
+
+.inventory-form select:focus,
+.inventory-form input:focus {
+  outline: none;
+  border-color: #d32f2f; /* Matches App.css primary red */
+  background: #fff;
+  box-shadow: 0 0 8px rgba(211, 47, 47, 0.2);
+}
+
+.inventory-form button {
+  grid-column: span 2;
+  padding: 10px; /* Matches auth-button */
+  background: linear-gradient(90deg, #d32f2f, #b71c1c); /* Matches App.css primary red */
+  color: #fff;
   border: none;
-  border-radius: 4px;
+  border-radius: 4px; /* Matches auth-button */
+  font-size: 1em; /* Matches auth-button */
+  font-weight: 600; /* Matches auth-button */
   cursor: pointer;
+  transition: all 0.3s ease; /* Matches App.css transitions */
+}
+
+.inventory-form button:hover:not(:disabled) {
+  background: linear-gradient(90deg, #b71c1c, #d32f2f); /* Matches auth-button hover */
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+}
+
+.inventory-form button:disabled {
+  background: #b2bec3;
+  cursor: not-allowed;
+}
+
+/* Table styling */
+.inventory-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: rgba(255, 255, 255, 0.9); /* Glassmorphism effect */
+  backdrop-filter: blur(8px);
+  border-radius: 8px; /* Matches dashboard-card */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Matches App.css shadow */
+  animation: fadeIn 0.5s ease-in;
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 10px; /* Matches dashboard-card padding */
+  text-align: left;
+  font-size: 1em;
+}
+
+.inventory-table th {
+  background: linear-gradient(90deg, #d32f2f, #b71c1c); /* Matches App.css primary red */
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.9em;
+}
+
+.inventory-table td {
+  border-bottom: 1px solid #e5e7eb;
+  color: #2d3436;
+}
+
+.inventory-table tr:last-child td {
+  border-bottom: none;
+}
+
+.inventory-table tr {
+  transition: all 0.3s ease; /* Matches App.css transitions */
+}
+
+.inventory-table tr:hover {
+  background: #f4f4f4; /* Matches App.css background */
+  transform: translateY(-2px);
+}
+
+/* Dashboard button */
+button:not(.inventory-form button) {
+  display: block;
+  margin: 20px auto 0; /* Matches dashboard-card margin */
+  padding: 10px 20px; /* Matches card-button */
+  background: linear-gradient(90deg, #7f1d1d, #dc2626); /* Darker red gradient */
+  color: #fff;
+  border: none;
+  border-radius: 4px; /* Matches card-button */
+  font-size: 1em; /* Matches card-button */
+  font-weight: 600; /* Matches card-button */
+  cursor: pointer;
+  transition: all 0.3s ease; /* Matches App.css transitions */
+}
+
+button:not(.inventory-form button):hover {
+  background: linear-gradient(90deg, #dc2626, #7f1d1d);
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(127, 29, 29, 0.3);
+}
+
+/* Animations */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .blood-inventory-container {
+    margin: 40px auto; /* Matches auth-container laptop */
+    padding: 15px;
+  }
+
+  .inventory-form {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-form button {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  h2 {
+    font-size: 1.3em;
+  }
+
+  h3 {
+    font-size: 1.1em;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    font-size: 0.9em;
+    padding: 8px;
+  }
+
+  .inventory-form {
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .inventory-form select,
+  .inventory-form input {
+    padding: 6px;
+  }
+
+  .inventory-form button {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blood-inventory-container {
+    margin: 20px auto;
+    padding: 10px;
+  }
+
+  h2 {
+    font-size: 1.2em;
+  }
+
+  h3 {
+    font-size: 1em;
+  }
+
+  .inventory-table {
+    font-size: 0.85em;
+  }
+
+  .inventory-table th,
+  .inventory-table td {
+    padding: 6px;
+    font-size: 0.85em;
+  }
+
+  .inventory-form {
+    padding: 10px;
+  }
+
+  .inventory-form label {
+    font-size: 0.85em;
+  }
+
+  .inventory-form select,
+  .inventory-form input {
+    font-size: 0.9em;
+    padding: 5px;
+  }
+
+  .inventory-form button {
+    font-size: 0.9em;
+    padding: 7px;
+  }
+
+  button:not(.inventory-form button) {
+    padding: 7px 15px;
+    font-size: 0.9em;
+  }
 }

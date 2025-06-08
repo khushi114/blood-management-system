@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './BloodInventory.css'; // Optional styling
 
 const BloodInventory = () => {
@@ -10,48 +10,96 @@ const BloodInventory = () => {
     quantity: '',
     expiryDate: '',
   });
+  const [isLoading, setIsLoading] = useState(false); // Loading state for UX
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Get user role from localStorage
   const user = JSON.parse(localStorage.getItem('user'));
   const isAdmin = user && user.role === 'admin';
 
-  const fetchInventory = async () => {
+  // Memoized fetchInventory
+  const fetchInventory = useCallback(async () => {
+    setIsLoading(true);
     try {
-      const res = await axios.get('/api/inventory');
-      setInventory(Array.isArray(res.data.data) ? res.data.data : []);
+      // Try fetching with sort and limit
+      const res = await axios.get('http://localhost:5000/api/inventory?sort=-createdAt&limit=10');
+      console.log('Fetched inventory:', res.data); // Debug API response
+      let data = Array.isArray(res.data.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      
+      // Fallback: If no data or sort/limit not supported, fetch all and sort/limit on frontend
+      if (data.length === 0) {
+        const fallbackRes = await axios.get('http://localhost:5000/api/inventory');
+        console.log('Fallback fetch:', fallbackRes.data);
+        data = Array.isArray(fallbackRes.data.data) 
+          ? fallbackRes.data.data
+          : Array.isArray(fallbackRes.data) 
+            ? fallbackRes.data 
+            : [];
+        // Sort by createdAt (newest first) and limit to 10
+        data = data
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 10);
+      }
+
+      setInventory(data);
     } catch (error) {
       console.error('Error fetching inventory:', error.response?.data || error.message);
-      alert('Error loading inventory');
+      alert('Error loading inventory. Please try again.');
+      setInventory([]);
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchInventory();
   }, []);
 
+  // Fetch inventory on mount and when location changes
+  useEffect(() => {
+    fetchInventory();
+  }, [fetchInventory, location.pathname]); // Re-fetch when route changes
+
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
-      await axios.post('/api/inventory', form);
+      const res = await axios.post('http://localhost:5000/api/inventory', form);
+      console.log('POST response:', res.data); // Debug POST response
       alert('Blood entry added!');
+
+      // Append the new item to the inventory state
+      const newItem = res.data.data || res.data;
+      setInventory((prev) => {
+        const updatedInventory = [newItem, ...prev];
+        // Sort by createdAt and limit to 10
+        return updatedInventory
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 10);
+      });
+
+      // Reset form
       setForm({ bloodGroup: '', quantity: '', expiryDate: '' });
-      fetchInventory();
     } catch (err) {
       console.error('Error adding inventory:', err.response?.data || err.message);
       alert('Failed to add inventory.');
+      await fetchInventory(); // Re-fetch to ensure state is correct
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="blood-inventory-container">
       <h2>Blood Inventory {isAdmin && '(Admin)'}</h2>
+
+      {/* Loading indicator */}
+      {isLoading && <p>Loading...</p>}
 
       {/* Only show form if admin */}
       {isAdmin && (
@@ -94,12 +142,14 @@ const BloodInventory = () => {
             />
           </label>
 
-          <button type="submit">Add Inventory</button>
+          <button type="submit" disabled={isLoading}>
+            Add Inventory
+          </button>
         </form>
       )}
 
       {/* Inventory Table */}
-      <h3>Current Inventory</h3>
+      <h3>Current Inventory (Last 10 Records)</h3>
       <table className="inventory-table">
         <thead>
           <tr>
