@@ -26,7 +26,7 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/BloodInventory" element={<BloodInventory />} /> 
-             <Route path="/BloodRequest" element={<BloodRequest/>} /> 
+             <Route path="/Requests" element={<BloodRequest/>} /> 
               <Route path="/" element={<h1>Blood Bank Home</h1>} />
               <Route path="/verify" element={<VerifyCode />} />
             </Routes>
