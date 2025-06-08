@@ -1,24 +1,29 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
 
-// Named export for useContext
 export const AuthContext = createContext();
 
-// AuthProvider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Load user from localStorage on mount
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUser(storedUser);
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser && storedUser !== 'undefined') {
+        setUser(JSON.parse(storedUser));
+      } else {
+        localStorage.removeItem('user'); // Clean up bad data
+      }
+    } catch (error) {
+      console.error("Error parsing user data from localStorage:", error);
+      localStorage.removeItem('user');
     }
   }, []);
 
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    if (userData) {
+      localStorage.setItem('user', JSON.stringify(userData));
+    }
   };
 
   const logout = () => {
@@ -33,5 +38,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Optional default export
 export default AuthProvider;
