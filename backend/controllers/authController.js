@@ -4,23 +4,22 @@ import User from '../models/User.js';
 import nodemailer from 'nodemailer';
 
 const saltRounds = 10;
+const verificationCodes = {};
 
 // Generate JWT Token
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
-const verificationCodes = {};
-
 // Send verification code to email
 export const sendVerificationCode = async (req, res) => {
   const { email } = req.body;
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // Save code temporarily
+  if (!email) return res.status(400).json({ message: 'Email is required' });
+
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
   verificationCodes[email] = code;
 
-  // Send email
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -38,24 +37,34 @@ export const sendVerificationCode = async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    res.json({ message: 'Verification code sent' });
-  } catch (err) {
-    console.error('Email send error:', err);
-    res.status(500).json({ message: 'Failed to send email' });
+    res.status(200).json({ message: 'Verification code sent' });
+  } catch (error) {
+    console.error('Error sending email:', error);
+    res.status(500).json({ message: 'Failed to send verification email' });
   }
 };
 
 // Verify the code and return token + user
 export const verifyCode = async (req, res) => {
   const { email, code } = req.body;
-  if (verificationCodes[email] === code) {
-    delete verificationCodes[email];
+
+  if (!email || !code) {
+    return res.status(400).json({ message: 'Email and code are required' });
+  }
+
+  if (verificationCodes[email] !== code) {
+    return res.status(400).json({ verified: false, message: 'Invalid code' });
+  }
+
+  delete verificationCodes[email];
+
+  try {
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ verified: false, message: 'User not found' });
-    }
+    if (!user) return res.status(404).json({ verified: false, message: 'User not found' });
+
     const token = generateToken(user._id);
-    res.json({
+
+    res.status(200).json({
       verified: true,
       token,
       user: {
@@ -63,11 +72,12 @@ export const verifyCode = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        adminCode: user.adminCode,
+        adminCode: user.adminCode || null,
       },
     });
-  } else {
-    res.status(400).json({ verified: false, message: 'Invalid code' });
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(500).json({ verified: false, message: 'Server error' });
   }
 };
 
@@ -75,22 +85,24 @@ export const verifyCode = async (req, res) => {
 export const registerUser = async (req, res) => {
   const { name, email, password, adminCode } = req.body;
 
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'Name, email, and password are required' });
+  }
+
   try {
     const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
+    if (existingUser) return res.status(400).json({ message: 'User already exists' });
 
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    let role = 'user';
-    let adminCodeToSave = undefined;
-    if (adminCode && adminCode.trim() !== '') {
-      role = 'admin';
-      adminCodeToSave = adminCode;
-    }
+    const newUser = new User({
+      name,
+      email,
+      passwordHash: hashedPassword,
+      role: adminCode ? 'admin' : 'user',
+      adminCode: adminCode || undefined,
+    });
 
-    const newUser = new User({ name, email, password: hashedPassword, role, adminCode: adminCodeToSave });
     await newUser.save();
 
     const token = generateToken(newUser._id);
@@ -102,7 +114,7 @@ export const registerUser = async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
-        adminCode: newUser.adminCode,
+        adminCode: newUser.adminCode || null,
       },
       token,
     });
@@ -112,37 +124,34 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// Login user (credentials only, not verification)
+// Login user with credentials
 export const loginUser = async (req, res) => {
   const { email, password, adminCode } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
   try {
-    const existingUser = await User.findOne({ email });
-    if (!existingUser) {
-      return res.status(404).json({ message: 'User not found' });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const isMatch = await bcrypt.compare(password, user.passwordHash);
+    if (!isMatch) return res.status(401).json({ message: 'Invalid password' });
+
+    if (user.role === 'admin' && user.adminCode !== adminCode) {
+      return res.status(401).json({ message: 'Invalid admin code' });
     }
 
-    const isMatch = await bcrypt.compare(password, existingUser.password);
-    if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid password' });
-    }
-
-    // If logging in as admin, check adminCode
-    if (existingUser.role === 'admin' && adminCode) {
-      if (existingUser.adminCode !== adminCode) {
-        return res.status(401).json({ message: 'Invalid admin code' });
-      }
-    }
-
-    const token = generateToken(existingUser._id);
+    const token = generateToken(user._id);
 
     res.status(200).json({
       user: {
-        _id: existingUser._id,
-        name: existingUser.name,
-        email: existingUser.email,
-        role: existingUser.role,
-        adminCode: existingUser.adminCode,
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        adminCode: user.adminCode || null,
       },
       token,
     });

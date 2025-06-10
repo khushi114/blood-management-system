@@ -1,10 +1,9 @@
-// routes/inventory.js
 import express from 'express';
-import { getInventory, addInventory } from '../controllers/inventoryController.js';
+import { getInventory, updateInventory } from '../controllers/inventoryController.js';
+import authenticate from '../utils/authenticate.js';
 
 const router = express.Router();
-
-router.get('/', getInventory);
-router.post('/', addInventory);
+router.get('/', authenticate, getInventory);
+router.post('/', authenticate, updateInventory);
 
 export default router;
