@@ -34,12 +34,6 @@ const Dashboard = () => {
           <h2 className="text-3xl lg:text-4xl font-bold text-red-700 text-center lg:text-left">
             Welcome, {user.email}
           </h2>
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 text-white px-5 py-2.5 rounded-lg text-base lg:text-lg hover:bg-red-700 transition"
-          >
-            Logout
-          </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 dashboard-grid">
           <div className="dashboard-card bg-white p-6 lg:p-8 rounded-xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
@@ -79,3 +73,7 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
+
+

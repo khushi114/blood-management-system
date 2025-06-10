@@ -61,7 +61,7 @@ body {
 
 .navbar-links li a:hover,
 .navbar-links li button:hover {
-  background-color: #991b1b; /* Darker red for hover */
+  background-color: #991b1b; 
   transform: scale(1.05); /* Subtle scale effect */
 }
 
@@ -114,7 +114,7 @@ body {
 }
 
 .auth-button {
-  background: linear-gradient(90deg, #d32f2f, #b71c1c); /* Matches navbar */
+  background: linear-gradient(90deg, #d32f2f, #b71c1c); 
   color: white;
   padding: 10px;
   border: none;
@@ -156,7 +156,7 @@ body {
 }
 
 .card-button {
-  background: linear-gradient(90deg, #d32f2f, #b71c1c); /* Matches navbar */
+  background: linear-gradient(90deg, #d32f2f, #b71c1c); 
   color: white;
   padding: 8px 16px;
   border: none;
@@ -180,7 +180,7 @@ body {
   width: 100%;
 }
 
-/* Media Queries for Laptop Screens */
+
 @media (min-width: 1024px) {
   .main-content {
     padding: 40px;

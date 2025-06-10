@@ -22,12 +22,12 @@ const App = () => {
           <Navbar />
           <main className="main-content">
             <Routes>
+              <Route path="/" element={<h1>Blood Bank Home</h1>} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/BloodInventory" element={<BloodInventory />} /> 
-             <Route path="/BloodRequest" element={<BloodRequest/>} /> 
-              <Route path="/" element={<h1>Blood Bank Home</h1>} />
+              <Route path="/requests" element={<BloodRequest />} /> {/* ✅ Correct route */}
               <Route path="/verify" element={<VerifyCode />} />
             </Routes>
           </main>
