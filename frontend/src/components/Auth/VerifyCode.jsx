@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-const token = localStorage.getItem('token');
 
 const VerifyCode = () => {
     const [code, setCode] = useState('');

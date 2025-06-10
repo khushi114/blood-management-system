@@ -97,13 +97,49 @@ const BloodRequest = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleAccept = async (requestId, bloodGroup, hospital) => {
     try {
-      await axios.delete(`http://localhost:5000/api/requests/${id}`);
-      alert('Request deleted');
+      // Search for matching donors (users with matching blood group)
+      const donorResponse = await axios.get('http://localhost:5000/api/users', {
+        params: { bloodGroup }
+      });
+      
+      if (donorResponse.data.length === 0) {
+        alert('No matching donors found for this blood group.');
+        return;
+      }
+
+      // Update request status to accepted
+      await axios.put(`http://localhost:5000/api/requests/${requestId}`, {
+        status: 'accepted'
+      });
+
+      // Send email notification to matching donors
+      await axios.post('http://localhost:5000/api/requests/send-notification', {
+        requestId,
+        bloodGroup,
+        hospital,
+        donorIds: donorResponse.data.map(donor => donor._id)
+      });
+
+      alert('Request accepted and notifications sent to matching donors.');
       fetchRequests();
     } catch (err) {
-      console.error('Delete failed:', err);
+      console.error('Accept failed:', err);
+      alert('Failed to process request: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleReject = async (requestId) => {
+    try {
+      await axios.put(`http://localhost:5000/api/requests/${requestId}`, {
+        status: 'rejected'
+      });
+      alert('Request rejected');
+      fetchRequests();
+    } catch (err) {
+      console.error('Reject failed:', err);
+      alert('Failed to reject request: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -154,6 +190,7 @@ const BloodRequest = () => {
                 <th className="p-2 border">Hospital</th>
                 <th className="p-2 border">Contact</th>
                 <th className="p-2 border">Reason</th>
+                <th className="p-2 border">Status</th>
                 <th className="p-2 border">Actions</th>
               </tr>
             </thead>
@@ -165,19 +202,28 @@ const BloodRequest = () => {
                   <td className="p-2 border">{req.hospital}</td>
                   <td className="p-2 border">{req.contact}</td>
                   <td className="p-2 border">{req.reason}</td>
-                  <td className="p-2 border">
+                  <td className="p-2 border">{req.status || 'pending'}</td>
+                  <td className="p-2 border flex gap-2">
                     <button
-                      onClick={() => handleDelete(req._id)}
-                      className="px-2 py-1 text-white bg-red-600 rounded hover:bg-red-700"
+                      onClick={() => handleAccept(req._id, req.bloodGroup, req.hospital)}
+                      className="px-2 py-1 text-white bg-green-600 rounded hover:bg-green-700"
+                      disabled={req.status === 'accepted' || req.status === 'rejected'}
                     >
-                      Delete
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => handleReject(req._id)}
+                      className="px-2 py-1 text-white bg-red-600 rounded hover:bg-red-700"
+                      disabled={req.status === 'accepted' || req.status === 'rejected'}
+                    >
+                      Reject
                     </button>
                   </td>
                 </tr>
               ))}
               {filteredRequests.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="text-center p-4">
+                  <td colSpan="7" className="text-center p-4">
                     No matching requests found.
                   </td>
                 </tr>
