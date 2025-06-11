@@ -83,7 +83,7 @@ export const verifyCode = async (req, res) => {
 
 // Register a new user
 export const registerUser = async (req, res) => {
-  const { name, email, password, adminCode } = req.body;
+  const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ message: 'Name, email, and password are required' });
@@ -99,7 +99,7 @@ export const registerUser = async (req, res) => {
       name,
       email,
       passwordHash: hashedPassword, // 🔐 Secure storage
-      role: adminCode ? 'admin' : 'user',
+      role: 'user',
       adminCode: adminCode || undefined,
     });
 
@@ -144,8 +144,10 @@ export const loginUser = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) return res.status(401).json({ message: 'Invalid password' });
 
-    if (user.role === 'admin' && user.adminCode !== adminCode) {
-      return res.status(401).json({ message: 'Invalid admin code' });
+    if (user.role === 'admin') {
+      if (!adminCode || adminCode !== process.env.ADMIN_SECRET_CODE) {
+        return res.status(401).json({ message: 'Invalid admin code' });
+      }
     }
 
     const token = generateToken(user._id);
