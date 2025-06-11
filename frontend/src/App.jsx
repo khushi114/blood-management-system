@@ -9,6 +9,7 @@ import Register from './components/Auth/Register';
 import Dashboard from './components/Dashboard';
 import BloodInventory from './components/BloodInventory'; 
 import BloodRequest from './components/BloodRequest';
+import HomePage from './components/HomePage'; // Assuming you have a HomePage component
 import VerifyCode from './components/Auth/VerifyCode';
 
 import './App.css';
@@ -27,10 +28,13 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/BloodInventory" element={<BloodInventory />} /> 
-              <Route path="/requests" element={<BloodRequest />} /> {/* ✅ Correct route */}
+             <Route path="/Requests" element={<BloodRequest/>} /> 
+              <Route path="/home" element={<HomePage />} />
+              <Route path="/" element={<h1>Blood Bank Home</h1>} />
               <Route path="/verify" element={<VerifyCode />} />
             </Routes>
           </main>
+          <HomePage/>
           <Footer />
         </div>
       </Router>

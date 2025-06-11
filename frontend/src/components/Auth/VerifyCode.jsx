@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-const token = localStorage.getItem('token');
 
 const VerifyCode = () => {
     const [code, setCode] = useState('');
@@ -39,8 +38,10 @@ const VerifyCode = () => {
             const res = await fetch('http://localhost:5000/api/verify-code', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: pendingUser?.email, code }),
+                body: JSON.stringify({ email: pendingUser.email, code }),
             });
+
+            const data = await res.json();
 
             if (res.status === 401) {
                 alert('Unauthorized. Please login again.');
@@ -48,15 +49,16 @@ const VerifyCode = () => {
                 return;
             }
 
-            const data = await res.json();
-
             if (res.ok && data.verified) {
-                localStorage.setItem('token', data.token);
-                if (data.user) {
-                    localStorage.setItem('user', JSON.stringify(data.user));
-                }
+                // Combine user and token before saving
+                const fullUser = {
+                    ...data.user,
+                    token: data.token,
+                };
+
+                localStorage.setItem('user', JSON.stringify(fullUser));
                 localStorage.removeItem('pendingUser');
-                login(data.user);
+                login(fullUser); // context login
                 setCode('');
                 navigate('/dashboard');
             } else {
@@ -67,6 +69,7 @@ const VerifyCode = () => {
             setError('Verification failed. Please try again.');
         }
     };
+
 
 
     // Show nothing until pendingUser is loaded

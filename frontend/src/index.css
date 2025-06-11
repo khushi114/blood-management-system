@@ -1,4 +1,20 @@
+/* src/index.css or src/globals.css */
+
+/* Import Inter font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Tailwind CSS directives - THESE ARE CRUCIAL */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Any global custom styles not handled by Tailwind,
+   e.g., setting default font family for the whole body */
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif; /* Apply Inter as the default font */
+  /* The background color for the body is already set via Tailwind in HomePage.jsx for consistency */
+}
+
+/* You generally should AVOID writing component-specific CSS like .navbar, .footer, etc. here,
+   as these are handled by Tailwind classes directly in your JSX components. */
