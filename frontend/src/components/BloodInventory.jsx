@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './BloodInventory.css';
 
 const BloodInventory = () => {
@@ -13,7 +13,6 @@ const BloodInventory = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const user = JSON.parse(localStorage.getItem('user'));
   const token = user?.token;
