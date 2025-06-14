@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react'; 
 
 // Function to handle smooth scrolling
 const scrollToSection = (sectionId) => {
@@ -64,13 +64,13 @@ const HomePage = () => {
             </p>
             
             <div className="flex flex-row gap-2 mb-8 justify-start">
-              <button className="group bg-red-500 hover:bg-red-600 text-white font-bold px-8 py-4 rounded-full shadow-xl transform hover:scale-105 transition-all duration-300 flex items-center gap-2">
+              <button className="bg-red-500 hover:bg-red-600 text-white font-bold px-8 py-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2">
                 <span>Become a Donor</span>
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 010-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
-              <button className="border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white font-bold px-8 py-4 rounded-full shadow-lg transition-all duration-300">
+              <button className="bg-red-500 hover:bg-red-600 text-white font-bold px-8 py-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
                 Learn More
               </button>
             </div>
@@ -176,7 +176,7 @@ const HomePage = () => {
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-4">{service.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{service.description}</p>
-                <button className="mt-6 text-red-500 hover:text-red-600 font-semibold flex items-center group-hover:translate-x-2 transition-transform duration-300">
+               66                <button className="mt-6 bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center group-hover:translate-x-2">
                   Learn More
                   <svg className="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 010-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -197,10 +197,10 @@ const HomePage = () => {
               We make the process of blood donation smoother and smarter — for both donors and hospitals.
             </p>
             <div className="flex justify-center space-x-4">
-              <button className="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-full font-semibold shadow-lg transition-all duration-300 transform hover:scale-105">
+              <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                 For Hospitals
               </button>
-              <button className="border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
+              <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                 For Donors
               </button>
             </div>
@@ -292,7 +292,7 @@ const HomePage = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300 flex items-center justify-center"
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
                 >
                   <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884zM18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
