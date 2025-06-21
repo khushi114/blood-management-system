@@ -56,8 +56,9 @@ import Dashboard from './components/Dashboard';
 import BloodInventory from './components/BloodInventory';
 import BloodRequest from './components/BloodRequest';
 import HomePage from './components/HomePage';
+import DynamicDonorInfoPage from './components/DynamicDonorInfoPage';
 import VerifyCode from './components/Auth/VerifyCode';
-
+import Campaigns from './components/Campaigns'; 
 import './App.css';
 import './index.css';
 
@@ -75,7 +76,10 @@ const App = () => {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/BloodInventory" element={<BloodInventory />} />
               <Route path="/requests" element={<BloodRequest />} />
+              <Route path="/DynamicDonorInfoPage" element={<DynamicDonorInfoPage />} />
+              <Route path="/campaigns" element={<Campaigns />} />
               <Route path="/verify" element={<VerifyCode />} />
+
             </Routes>
           </main>
           <Footer />

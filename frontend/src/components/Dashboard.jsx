@@ -164,7 +164,7 @@ const Dashboard = () => {
 
               <div 
                 className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 cursor-pointer group border border-gray-100 hover:border-green-200"
-                onClick={() => handleNavigation('/donors')}
+                onClick={() => handleNavigation('/DynamicDonorInfoPage')}
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="bg-green-100 p-3 rounded-full group-hover:bg-green-200 transition-colors">
