@@ -28,7 +28,8 @@
 import express from 'express';
 import { createRequest, getAllRequests, deleteRequest, acceptRequest, rejectRequest, notifyUser } from '../controllers/requestController.js';
 
-import protect from '../middleware/authMiddleware.js';
+import { authMiddleware as protect } from '../middleware/authMiddleware.js';
+
 const router = express.Router();
 
 router.post('/', createRequest);

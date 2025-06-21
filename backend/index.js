@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js'; // ✅ Include .js
 import inventoryRoutes from './routes/inventory.js';
 import requestRoutes from './routes/request.js';
+import donorRoutes from './routes/donorRoutes.js'; 
+import campaignRoutes from './routes/campaignRoutes.js';
 
 dotenv.config();
 
@@ -30,6 +32,8 @@ mongoose.connect(process.env.MONGO_URI, {
 app.use('/api', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/requests', requestRoutes);
+app.use('/api/donors', donorRoutes); 
+app.use('/api/campaigns', campaignRoutes);
 // Default route
 app.get('/', (req, res) => {
   res.send('Backend is running');
